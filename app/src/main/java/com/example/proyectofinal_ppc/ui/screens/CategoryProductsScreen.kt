@@ -1,7 +1,6 @@
 package com.example.proyectofinal_ppc.ui.screens
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
@@ -23,11 +22,12 @@ fun CategoryProductsScreen(
     val products = remember(state.products, categoryId) {
         state.products.filter { it.categoryId == categoryId }
     }
+    val categoryName = state.categories.find { it.id == categoryId }?.name ?: "Productos"
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Productos") },
+                title = { Text(categoryName) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Text("←")
@@ -41,24 +41,52 @@ fun CategoryProductsScreen(
             }
         }
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(padding)
-                .padding(16.dp)
-        ) {
-            items(products) { product ->
-                Card(
-                    modifier = Modifier
-                        .padding(8.dp),
-                    onClick = {
-                        navController.navigate(
-                            Screen.ProductDetail.createRoute(product.id)
-                        )
-                    }
-                ) {
-                    Column(Modifier.padding(16.dp)) {
-                        Text(product.name, style = MaterialTheme.typography.titleMedium)
-                        Text("$${product.price}")
+        if (products.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .padding(padding)
+                    .fillMaxSize(),
+                contentAlignment = androidx.compose.ui.Alignment.Center
+            ) {
+                Text("No hay productos en esta categoría.")
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(padding)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(products) { product ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            navController.navigate(
+                                Screen.ProductDetail.createRoute(product.id)
+                            )
+                        },
+                        elevation = CardDefaults.cardElevation(2.dp)
+                    ) {
+                        Column(Modifier.padding(16.dp)) {
+                            Text(
+                                product.name,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            if (product.description.isNotBlank()) {
+                                Spacer(Modifier.height(4.dp))
+                                Text(
+                                    product.description,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    maxLines = 2
+                                )
+                            }
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                "$${product.price}",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 }
             }

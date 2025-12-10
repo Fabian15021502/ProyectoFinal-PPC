@@ -29,6 +29,8 @@ androidxJunit = "1.2.1"
 espressoCore = "3.6.1"
 firebaseCrashlyticsBuildtools = "3.0.6"
 roomKtx = "2.8.4"
+foundationVersion = "1.10.0"
+espressoCoreVersion = "3.7.0"
 
 [libraries]
 
@@ -66,6 +68,8 @@ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "a
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
+androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundationVersion" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCoreVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

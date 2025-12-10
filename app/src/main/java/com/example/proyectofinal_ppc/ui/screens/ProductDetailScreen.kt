@@ -1,9 +1,7 @@
 package com.example.proyectofinal_ppc.ui.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -11,6 +9,7 @@ import androidx.navigation.NavController
 import com.example.proyectofinal_ppc.navigation.Screen
 import com.example.proyectofinal_ppc.ui.viewmodel.StoreViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailScreen(
     navController: NavController,
@@ -27,20 +26,58 @@ fun ProductDetailScreen(
         return
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
-        Text("Detalle del Producto", style = MaterialTheme.typography.headlineMedium)
-        Spacer(Modifier.height(16.dp))
-        Text(product.name, style = MaterialTheme.typography.titleMedium)
-        Spacer(Modifier.height(8.dp))
-        Text(product.description)
-        Spacer(Modifier.height(8.dp))
-        Text("Precio: $${product.price}")
-        Spacer(Modifier.height(16.dp))
-        Button(onClick = {
-            storeViewModel.addToCart(product)
-            navController.navigate(Screen.Cart.route)
-        }) {
-            Text("Agregar al Carrito")
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(product.name) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Text("←")
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text("Detalle del Producto", style = MaterialTheme.typography.headlineSmall)
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(2.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(product.name, style = MaterialTheme.typography.titleLarge)
+                    Text(product.description)
+                    Text(
+                        "Precio: $${product.price}",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+
+            Spacer(Modifier.weight(1f))
+
+            Button(
+                onClick = {
+                    storeViewModel.addToCart(product)
+                    navController.navigate(Screen.Cart.route)
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Agregar al Carrito")
+            }
         }
     }
 }

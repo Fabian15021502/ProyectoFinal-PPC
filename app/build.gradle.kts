@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.example.proyectofinal_ppc"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.proyectofinal_ppc"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
     }
@@ -73,6 +73,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.firebase.crashlytics.buildtools)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.foundation)
+    implementation(libs.espresso.core)
 
     // Debug
     debugImplementation(libs.androidx.compose.ui.tooling)

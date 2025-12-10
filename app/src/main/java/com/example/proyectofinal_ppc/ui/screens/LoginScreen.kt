@@ -5,6 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.proyectofinal_ppc.model.UserRole
@@ -35,44 +36,60 @@ fun LoginScreen(
     Scaffold(
         topBar = { CenterAlignedTopAppBar(title = { Text("Iniciar Sesión") }) }
     ) { padding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(padding),
+            contentAlignment = Alignment.Center
         ) {
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Correo") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(8.dp))
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Contraseña") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(16.dp))
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                elevation = CardDefaults.cardElevation(4.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("Bienvenido a UDShop", style = MaterialTheme.typography.titleLarge)
 
-            if (state.isLoading) {
-                CircularProgressIndicator()
-            } else {
-                Button(onClick = { authViewModel.login(email, password) }) {
-                    Text("Entrar")
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        label = { Text("Correo") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        label = { Text("Contraseña") },
+                        modifier = Modifier.fillMaxWidth(),
+                        visualTransformation = PasswordVisualTransformation()
+                    )
+
+                    if (state.isLoading) {
+                        CircularProgressIndicator()
+                    } else {
+                        Button(
+                            onClick = { authViewModel.login(email, password) },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Entrar")
+                        }
+                    }
+
+                    state.error?.let {
+                        Text(it, color = MaterialTheme.colorScheme.error)
+                    }
+
+                    TextButton(onClick = { navController.navigate(Screen.Register.route) }) {
+                        Text("Crear cuenta")
+                    }
                 }
-            }
-
-            state.error?.let {
-                Spacer(Modifier.height(8.dp))
-                Text(it, color = MaterialTheme.colorScheme.error)
-            }
-
-            TextButton(onClick = { navController.navigate(Screen.Register.route) }) {
-                Text("Crear cuenta")
             }
         }
     }

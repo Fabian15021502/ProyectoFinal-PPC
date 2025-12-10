@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -76,76 +76,111 @@ fun AdminHomeScreen(
                 )
                 .padding(16.dp)
         ) {
-            if (state.isLoading) {
-                CircularProgressIndicator(Modifier.align(Alignment.Center))
-            } else if (state.error != null) {
-                Column(
-                    modifier = Modifier.align(Alignment.Center),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        "Error al cargar productos",
-                        color = MaterialTheme.colorScheme.error
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Text(state.error ?: "", style = MaterialTheme.typography.bodySmall)
-                    Spacer(Modifier.height(16.dp))
-                    Button(onClick = { storeViewModel.loadCategoriesAndProducts() }) {
-                        Text("Reintentar")
+            when {
+                state.isLoading -> {
+                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+                }
+
+                state.error != null -> {
+                    Column(
+                        modifier = Modifier.align(Alignment.Center),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            "Error al cargar productos",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Text(state.error ?: "", style = MaterialTheme.typography.bodySmall)
+                        Spacer(Modifier.height(16.dp))
+                        Button(onClick = { storeViewModel.loadCategoriesAndProducts() }) {
+                            Text("Reintentar")
+                        }
                     }
                 }
-            } else {
-                LazyColumn {
-                    item {
-                        Text(
-                            "Productos",
-                            style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        )
-                    }
 
-                    items(state.products) { product ->
-                        ElevatedCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 6.dp)
-                        ) {
-                            Column(Modifier.padding(16.dp)) {
-                                Text(
-                                    product.name,
-                                    style = MaterialTheme.typography.titleMedium
+                else -> {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        // Resumen
+                        item {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                SummaryCard(
+                                    title = "Categorías",
+                                    value = state.categories.size.toString()
                                 )
-                                Spacer(Modifier.height(4.dp))
-                                Text(
-                                    "Precio: $${product.price}",
-                                    style = MaterialTheme.typography.bodyMedium
+                                SummaryCard(
+                                    title = "Productos",
+                                    value = state.products.size.toString()
                                 )
-                                Spacer(Modifier.height(4.dp))
-                                Text(
-                                    "Stock: ${product.stock}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                                Spacer(Modifier.height(8.dp))
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    OutlinedButton(
-                                        onClick = {
-                                            navController.navigate(
-                                                Screen.AdminEditProduct.createRoute(product.id)
-                                            )
-                                        }
-                                    ) {
-                                        Text("Editar")
+                            }
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                "Listado de productos",
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                        }
+
+                        // Productos
+                        items(state.products) { product ->
+                            ElevatedCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp)
+                            ) {
+                                Column(Modifier.padding(16.dp)) {
+                                    Text(
+                                        product.name,
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                    if (product.description.isNotBlank()) {
+                                        Spacer(Modifier.height(4.dp))
+                                        Text(
+                                            product.description,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            maxLines = 2
+                                        )
                                     }
-                                    TextButton(
-                                        onClick = { storeViewModel.deleteProduct(product.id) }
+                                    Spacer(Modifier.height(8.dp))
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(16.dp)
                                     ) {
                                         Text(
-                                            "Eliminar",
-                                            color = MaterialTheme.colorScheme.error
+                                            "Precio: $${product.price}",
+                                            style = MaterialTheme.typography.bodyMedium
                                         )
+                                        Text(
+                                            "Stock: ${product.stock}",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                    Spacer(Modifier.height(12.dp))
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        OutlinedButton(
+                                            onClick = {
+                                                navController.navigate(
+                                                    Screen.AdminEditProduct.createRoute(product.id)
+                                                )
+                                            }
+                                        ) {
+                                            Text("Editar")
+                                        }
+                                        TextButton(
+                                            onClick = { storeViewModel.deleteProduct(product.id) }
+                                        ) {
+                                            Text(
+                                                "Eliminar",
+                                                color = MaterialTheme.colorScheme.error
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -153,6 +188,36 @@ fun AdminHomeScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun SummaryCard(
+    title: String,
+    value: String,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                title,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+            Text(
+                value,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
         }
     }
 }

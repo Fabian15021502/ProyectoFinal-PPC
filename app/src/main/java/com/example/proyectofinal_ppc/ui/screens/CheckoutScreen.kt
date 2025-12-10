@@ -22,37 +22,85 @@ fun CheckoutScreen(
     var address by remember { mutableStateOf("") }
     var paymentMethod by remember { mutableStateOf("Tarjeta") }
 
-    Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
-        Text("Datos de envío", style = MaterialTheme.typography.headlineMedium)
-        Spacer(Modifier.height(16.dp))
-        OutlinedTextField(
-            value = address,
-            onValueChange = { address = it },
-            label = { Text("Dirección completa") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(Modifier.height(16.dp))
-        Text("Método de pago")
+    val total = storeState.cart.sumOf { it.subtotal }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text("Confirmar pedido", style = MaterialTheme.typography.headlineMedium)
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(2.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text("Datos de envío", style = MaterialTheme.typography.titleMedium)
+                OutlinedTextField(
+                    value = address,
+                    onValueChange = { address = it },
+                    label = { Text("Dirección completa") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Text("Método de pago", style = MaterialTheme.typography.titleMedium)
+                OutlinedTextField(
+                    value = paymentMethod,
+                    onValueChange = { paymentMethod = it },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    "Total a pagar:",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+                Text(
+                    "$${total}",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+        }
+
         Spacer(Modifier.height(8.dp))
-        OutlinedTextField(
-            value = paymentMethod,
-            onValueChange = { paymentMethod = it },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(Modifier.height(16.dp))
-        Text("Total a pagar: $${storeState.total}")
-        Spacer(Modifier.height(16.dp))
 
         Button(
             onClick = {
                 authState.user?.let { user ->
-                    storeViewModel.createOrder(user.uid, address, paymentMethod)
+                    storeViewModel.createOrder(
+                        userId = user.uid,
+                        address = address,
+                        paymentMethod = paymentMethod
+                    )
                     navController.navigate(Screen.OrderConfirmation.route) {
                         popUpTo(Screen.Cart.route) { inclusive = true }
                     }
                 }
             },
-            enabled = address.isNotBlank() && storeState.cart.isNotEmpty()
+            enabled = address.isNotBlank() && storeState.cart.isNotEmpty(),
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text("Confirmar pedido")
         }
