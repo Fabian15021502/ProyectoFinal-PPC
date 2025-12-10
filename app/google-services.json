@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "807273146998",
+    "project_id": "proyectofinalppc-e441f",
+    "storage_bucket": "proyectofinalppc-e441f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:807273146998:android:ce7531056af4664b6e4d57",
+        "android_client_info": {
+          "package_name": "com.example.proyectofinal_ppc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6lLBh90zmLsCK7OS7ERb8YL5eTvFivDo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
