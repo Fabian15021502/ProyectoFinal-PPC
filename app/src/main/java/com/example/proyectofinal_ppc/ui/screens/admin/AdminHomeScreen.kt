@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -54,6 +54,7 @@ fun AdminHomeScreen(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = {
+                    // 👉 nuevo producto
                     navController.navigate(Screen.AdminEditProduct.createNew())
                 },
                 icon = { Icon(Icons.Default.Add, contentDescription = "Nuevo producto") },
@@ -76,96 +77,85 @@ fun AdminHomeScreen(
                 )
                 .padding(16.dp)
         ) {
-            when {
-                state.isLoading -> {
-                    CircularProgressIndicator(Modifier.align(Alignment.Center))
-                }
-
-                state.error != null -> {
-                    Column(
-                        modifier = Modifier.align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            "Error al cargar productos",
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        Text(state.error ?: "", style = MaterialTheme.typography.bodySmall)
-                        Spacer(Modifier.height(16.dp))
-                        Button(onClick = { storeViewModel.loadCategoriesAndProducts() }) {
-                            Text("Reintentar")
-                        }
+            if (state.isLoading) {
+                CircularProgressIndicator(Modifier.align(Alignment.Center))
+            } else if (state.error != null) {
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        "Error al cargar productos",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(state.error ?: "", style = MaterialTheme.typography.bodySmall)
+                    Spacer(Modifier.height(16.dp))
+                    Button(onClick = { storeViewModel.loadCategoriesAndProducts() }) {
+                        Text("Reintentar")
                     }
                 }
-
-                else -> {
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+            } else {
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    // Resumen arriba
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        // Resumen
-                        item {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                SummaryCard(
-                                    title = "Categorías",
-                                    value = state.categories.size.toString()
-                                )
-                                SummaryCard(
-                                    title = "Productos",
-                                    value = state.products.size.toString()
-                                )
-                            }
-                            Spacer(Modifier.height(8.dp))
-                            Text(
-                                "Listado de productos",
-                                style = MaterialTheme.typography.titleLarge
-                            )
-                        }
+                        SummaryCard(
+                            title = "Categorías",
+                            value = state.categories.size.toString(),
+                            modifier = Modifier.weight(1f)
+                        )
+                        SummaryCard(
+                            title = "Productos",
+                            value = state.products.size.toString(),
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
 
-                        // Productos
+                    Spacer(Modifier.height(16.dp))
+
+                    Text(
+                        "Productos",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
                         items(state.products) { product ->
                             ElevatedCard(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 4.dp)
+                                    .padding(vertical = 6.dp)
                             ) {
                                 Column(Modifier.padding(16.dp)) {
                                     Text(
                                         product.name,
                                         style = MaterialTheme.typography.titleMedium
                                     )
-                                    if (product.description.isNotBlank()) {
-                                        Spacer(Modifier.height(4.dp))
-                                        Text(
-                                            product.description,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            maxLines = 2
-                                        )
-                                    }
+                                    Spacer(Modifier.height(4.dp))
+                                    Text(
+                                        "Precio: $${product.price}",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                    Spacer(Modifier.height(4.dp))
+                                    Text(
+                                        "Stock: ${product.stock}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                     Spacer(Modifier.height(8.dp))
-                                    Row(
-                                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                                    ) {
-                                        Text(
-                                            "Precio: $${product.price}",
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
-                                        Text(
-                                            "Stock: ${product.stock}",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-                                    Spacer(Modifier.height(12.dp))
                                     Row(
                                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
                                         OutlinedButton(
                                             onClick = {
+                                                // 👉 editar producto
                                                 navController.navigate(
                                                     Screen.AdminEditProduct.createRoute(product.id)
                                                 )
